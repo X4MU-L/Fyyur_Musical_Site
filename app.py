@@ -22,7 +22,7 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 # TODO: connect to a local postgresql database
-
+SQLALCHEMY_DATABASE_URI = 'postgres://postgres:callONme@postgres/fyyur'
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
