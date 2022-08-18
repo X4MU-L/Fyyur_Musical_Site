@@ -26,7 +26,7 @@ class Venue(db.Model):
     website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
     seeking_description = db.Column(db.String(120))
-    shows = db.relationship("Show", backref="artists", lazy=True, cascade="all, delete-orphan")
+    shows = db.relationship("Show", backref="venues", lazy=True, cascade="all, delete-orphan")
 
 
 # Artist Model
@@ -57,9 +57,9 @@ class Show(db.Model):
     __tablename__ = "shows"
 
     id = db.Column(db.Integer, primary_key=True)
-    artist_id = db.Column(db.Integer, db.ForeignKey("Artist.id"), nullable=False)
-    venue_id = db.Column(db.Integer, db.ForeignKey("Venue.id"), nullable=False)
-    start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    artist_id = db.Column(db.Integer, db.ForeignKey("artists.id"), nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey("venues.id"), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
     # venue = db.relationship('Venue')
     # artist = db.relationship('Artist')
 
