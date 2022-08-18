@@ -1,7 +1,8 @@
 #----------------------------------------------------------------------------#
 # Imports
 #----------------------------------------------------------------------------#
-
+import collections
+import collections.abc
 import json
 import sys
 import dateutil.parser
@@ -80,6 +81,7 @@ def venues():
         data.append(city_and_state)
     return render_template('pages/venues.html', areas=data)
 
+# Venue search
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -164,7 +166,7 @@ def create_venue_form():
     form = VenueForm()
     return render_template('forms/new_venue.html', form=form)
 
-# TODO: error {'csrf_token': ['The CSRF token is missing.']}
+
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
 
@@ -183,7 +185,7 @@ def create_venue_submission():
                 image_link=form.image_link.data,
                 seeking_talent=form.seeking_talent.data,
                 seeking_description=form.seeking_description.data,
-                website=form.website.data,
+                website_link=form.website_link.data,
             )
             db.session.add(new_venue)
             db.session.commit()
@@ -313,7 +315,7 @@ def show_artist(artist_id):
 
 #  Update
 #  ----------------------------------------------------------------
-# TODO: error {'csrf_token': ['The CSRF token is missing.']}
+
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
@@ -324,7 +326,7 @@ def edit_artist(artist_id):
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 # Edit artist
-# TODO: error {'csrf_token': ['The CSRF token is missing.']}
+
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
     
@@ -343,7 +345,7 @@ def edit_artist_submission(artist_id):
             artist.image_link=form.image_link.data
             artist.seeking_venue=form.seeking_venue.data
             artist.seeking_description=form.seeking_description.data
-            artist.website=form.website.data
+            artist.website_link=form.website_link.data
 
             db.session.add(artist)
             db.session.commit()
@@ -368,7 +370,7 @@ def edit_venue(venue_id):
  
     return render_template('forms/edit_venue.html', form=form, venue=venue)
 
-# TODO: error {'csrf_token': ['The CSRF token is missing.']}
+
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
   
@@ -386,7 +388,7 @@ def edit_venue_submission(venue_id):
             venue.image_link=form.image_link.data
             venue.seeking_talent=form.seeking_talent.data
             venue.seeking_description=form.seeking_description.data
-            venue.website=form.website.data
+            venue.website_link=form.website_link.data
 
             db.session.add(venue)
             db.session.commit()
@@ -425,7 +427,7 @@ def create_artist_submission():
                 genres=",".join(form.genres.data), 
                 image_link=form.image_link.data,
                 facebook_link=form.facebook_link.data,
-                website=form.website.data,
+                website_link=form.website_link.data,
                 seeking_venue=form.seeking_venue.data,
                 seeking_description=form.seeking_description.data,
             )
@@ -433,7 +435,7 @@ def create_artist_submission():
             db.session.commit()
             # on successful db insert, flash succes
             flash("Artist " + form.name.data + " was successfully listed!")
-        except Exception:
+        except:
             db.session.rollback()
             # on failure db insert, flash error
             flash("Artist was not successfully listed.")
@@ -451,45 +453,22 @@ def create_artist_submission():
 
 @app.route('/shows')
 def shows():
-  # displays list of shows at /shows
-  # TODO: replace with real venues data.
-  data=[{
-    "venue_id": 1,
-    "venue_name": "The Musical Hop",
-    "artist_id": 4,
-    "artist_name": "Guns N Petals",
-    "artist_image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
-    "start_time": "2019-05-21T21:30:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 5,
-    "artist_name": "Matt Quevedo",
-    "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    "start_time": "2019-06-15T23:00:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 6,
-    "artist_name": "The Wild Sax Band",
-    "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "start_time": "2035-04-01T20:00:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 6,
-    "artist_name": "The Wild Sax Band",
-    "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "start_time": "2035-04-08T20:00:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 6,
-    "artist_name": "The Wild Sax Band",
-    "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "start_time": "2035-04-15T20:00:00.000Z"
-  }]
-  return render_template('pages/shows.html', shows=data)
+   
+    data = []
+    shows = Show.query.all()
+    print(shows)
+    for show in shows:
+        temp_show = {}
+        temp_show["venue_id"] = show.venues.id
+        temp_show["venue_name"] = show.venues.name
+        temp_show["artist_id"] = show.artists.id
+        temp_show["artist_name"] = show.artists.name
+        temp_show["artist_image_link"] = show.artists.image_link
+        temp_show["start_time"] = show.start_time.strftime("%m/%d/%Y, %H:%M:%S")
+        data.append(temp_show)
+        print(data)
+    
+    return render_template('pages/shows.html', shows=data)
 
 @app.route('/shows/create')
 def create_shows():
@@ -499,15 +478,30 @@ def create_shows():
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
-  # called to create new shows in the db, upon submitting new show listing form
-  # TODO: insert form data as a new Show record in the db, instead
+    
+    form = ShowForm(request.form)
+    
+    if form.validate():
+        try:
+            new_show = Show(
+                artist_id=form.artist_id.data,
+                venue_id=form.venue_id.data,
+                start_time=form.start_time.data
+            )
+            db.session.add(new_show)
+            db.session.commit()
+            flash('Show was successfully listed!')
+        except:
+            db.session.rollback()
+            print("\n",sys.exc_info(),"\n")
+            flash('Show was not successfully listed.')
+        finally:
+            db.session.close()
+    else:
+        print("\n", form.errors,"\n")
+        flash('Show was not successfully listed.')
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('pages/home.html')
+    return render_template('pages/home.html')
 
 @app.errorhandler(404)
 def not_found_error(error):
