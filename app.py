@@ -53,8 +53,6 @@ def index():
 @app.route('/venues')
 def venues():
 
-    # TODO:      num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-    
     distint_results = Venue.query.distinct(Venue.city, Venue.state).all() # to limit returning bogos results
     data = []
     
@@ -71,7 +69,7 @@ def venues():
             store_temp.append({
                 "id": venue.id,
                 "name": venue.name,
-                # "num_upcoming_shows": len(list(filter(lambda x: x.start_time > datetime.now(), venue.shows)))
+                "num_upcoming_shows": len(list(filter(lambda x: x.start_time > datetime.now(), venue.shows)))
             })
 
         city_and_state["venues"] = store_temp
@@ -82,9 +80,7 @@ def venues():
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
     search_term = request.form.get('search_term')
-    # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-    # seach for Hop should return "The Musical Hop".
-    # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+   
     response = {}
     venues = list(Venue.query.filter(
         Venue.name.ilike(f"%{search_term}%") |
@@ -92,7 +88,7 @@ def search_venues():
         Venue.city.ilike(f"%{search_term}%") 
     ).all())
     response["count"] = len(venues)
-    
+
     data = []
     for venue in venues:
         store_venue = {
@@ -105,6 +101,8 @@ def search_venues():
         
     response['data'] = data
     return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+
+
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
