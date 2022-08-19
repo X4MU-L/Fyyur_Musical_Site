@@ -199,7 +199,7 @@ def create_venue_submission():
             db.session.close()
     else:
         print("\n",form.errors, "\n")
-        flash('An error occurred. Venue ' + form.name.data + ' could not be listed.')
+        flash('An error occurred. Venue ' + form.name.data + ' please check the informations provided.')
     
     return render_template('pages/home.html')
 
@@ -456,7 +456,6 @@ def shows():
    
     data = []
     shows = Show.query.all()
-    print(shows)
     for show in shows:
         temp_show = {}
         temp_show["venue_id"] = show.venues.id
@@ -466,7 +465,6 @@ def shows():
         temp_show["artist_image_link"] = show.artists.image_link
         temp_show["start_time"] = show.start_time.strftime("%m/%d/%Y, %H:%M:%S")
         data.append(temp_show)
-        print(data)
     
     return render_template('pages/shows.html', shows=data)
 
@@ -528,7 +526,7 @@ if not app.debug:
 
 # Default port:
 if __name__ == '__main__':
-    app.run(host="127.0.0.1",debug=True,port=5000)
+    app.run()
 
 # Or specify port manually:
 '''
